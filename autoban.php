@@ -2,8 +2,6 @@
 
 $file_links = 'list.txt';
 $file_links_block = 'blk-zones.conf';
-
-include('idna_convert.class.php');
 class acl
 {
 	 public $file_links;
@@ -34,8 +32,7 @@ class acl
 		
 			 foreach($lines as $line ) 
 			 {
-				 $idn = new idna_convert(array('idn_version'=>2008));
-		$line=(stripos($line, 'xn--')!==false) ? $idn->decode($line) : $idn->encode($line); // проверка и конвертирование кодировок
+			$line = idn_to_ascii($line,IDNA_NONTRANSITIONAL_TO_ASCII,INTL_IDNA_VARIANT_UTS46);	// проверка и конвертирование кодировок
 
 					 $full_line = "#" . $line . PHP_EOL.
 					 "local-zone: " . '"'.$line. ".".'"'." static" . PHP_EOL .
@@ -48,3 +45,6 @@ $acl = new acl($file_links, $file_links_block);
 $acl->deleteFile($file_links_block);
 $acl->writeHeader($file_links_block);
 $acl->read_write_File($file_links, $file_links_block );
+
+
+
